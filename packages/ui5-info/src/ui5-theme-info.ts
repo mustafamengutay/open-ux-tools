@@ -2,7 +2,7 @@ import { defaultVersion, latestVersionString } from './constants';
 import type { UI5Theme } from './types';
 import type { SemVer } from 'semver';
 import { coerce, gte, lt } from 'semver';
-import { supportedUi5VersionFallbacks } from './ui5-version-fallback';
+import { getLatestUI5Version } from './ui5-version-info';
 
 const MIN_UI5_VER_DARK_THEME = '1.72.0';
 const MIN_UI5_VER_HORIZON_THEME = '1.102.0';
@@ -81,7 +81,7 @@ function isSupported(theme: UI5Theme, cleanSemVer: SemVer): boolean {
 /**
  * Returns the list of supported UI5 themes for a given UI5 version.
  *
- * - If ui5Version is Latest, the latest supported UI5 version is used.
+ * - If ui5Version is not specified, the latest supported offical UI5 version is used.
  * - If ui5Version is a snapshot version (e.g., 'snapshot-1.137.0'), the snapshot prefix is removed.
  * - If ui5Version is invalid or cannot be parsed into a semantic version, all themes are returned.
  * - Themes that are deprecated for the given version are marked with "(deprecated)" in their label.
@@ -89,14 +89,19 @@ function isSupported(theme: UI5Theme, cleanSemVer: SemVer): boolean {
  * @param [ui5Version] - The UI5 version to filter themes by. Defaults to `defaultVersion`.
  * @returns An array of UI5 themes supported for the specified version.
  */
-export function getUi5Themes(ui5Version: string = defaultVersion): UI5Theme[] {
-    // Handle 'Latest' versions by using the latest supported UI5 version
-    const isUsingLatestVersion = ui5Version === latestVersionString;
-    const resolvedUi5Version = isUsingLatestVersion
-        ? supportedUi5VersionFallbacks[0].version
-        : ui5Version.replace('snapshot-', '');
+export async function getUi5Themes(ui5Version: string = defaultVersion): Promise<UI5Theme[]> {
+    
+    if (ui5Version === latestVersionString) {
+        const ui5Ver = await getLatestUI5Version(true);
+        // There was an issue getting the latest UI5 version, return all themes
+        if (!ui5Ver) {
+            return Object.values(ui5Themes);
+        }
+        ui5Version = ui5Ver;
+    }
 
-    const cleanSemVer = coerce(resolvedUi5Version);
+    const ui5VersionSince = ui5Version.replace('snapshot-', '');
+    const cleanSemVer = coerce(ui5VersionSince);
 
     if (!cleanSemVer) {
         return Object.values(ui5Themes);

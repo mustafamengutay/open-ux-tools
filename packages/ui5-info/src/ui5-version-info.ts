@@ -378,12 +378,24 @@ export async function getUI5Versions(filterOptions?: UI5VersionFilterOptions): P
 }
 
 /**
- * Method retrieves latest SAPUI5 version by sending HTTP GET request to "https://ui5.sap.com/version.json'".
+ * Method retrieves latest SAPUI5 version by sending HTTP GET request to "https://ui5.sap.com/version.json'" if `useCache`` is false or not specified.
+ * Otherwise, it will return the cached version if available.
  *
+ * @param useCache - if true, will return the latests cached official version if available, otherwise will make a network call
  * @returns Latest version of SAPUI5.
  */
-export async function getLatestUI5Version(): Promise<string | undefined> {
+export async function getLatestUI5Version(useCache = false): Promise<string | undefined> {
+
     let version: string | undefined;
+    if (useCache && latestUI5Version) {
+        return latestUI5Version;
+    } else if (useCache && ui5VersionsCache.officialVersions.length > 0) {
+        version = typeof ui5VersionsCache.officialVersions[0] === 'string' 
+            ? ui5VersionsCache.officialVersions[0] 
+            : ui5VersionsCache.officialVersions[0].version;
+        return version;
+    }
+
     try {
         const ui5Versions = await requestUI5Versions<UI5VersionsResponse>();
         version = ui5Versions?.latest?.version;
