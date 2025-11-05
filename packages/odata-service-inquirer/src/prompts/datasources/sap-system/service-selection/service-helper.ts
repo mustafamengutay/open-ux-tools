@@ -328,17 +328,6 @@ export async function validateService(
         origin = new URL(url).origin;
     }
 
-    if (connectionValidator.serviceProvider instanceof AbapServiceProvider) {
-        const valueListReferences = connectionValidator.serviceProvider.getValueListReferences(
-            service.servicePath,
-            convertedMetadata,
-            annotations ?? []
-        );
-        connectionValidator.serviceProvider.fetchValueListReferenceServices(valueListReferences).catch(() => {
-            LoggerHelper.logger.info(t('prompts.validationMessages.noValueListReferences'));
-        });
-    }
-
     PromptState.odataService.annotations = annotations;
     PromptState.odataService.metadata = metadata;
     PromptState.odataService.odataVersion =

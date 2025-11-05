@@ -356,6 +356,10 @@ export type ServiceSelectionPromptOptions = {
      * A list of service ids ({@link ODataServiceInfo.id}), used to filter the catalog results
      */
     serviceFilter?: string[];
+    /**
+     * Include a prompt to confirm if value help metadata should be downloaded
+     */
+    includeValueHelpDownloadPrompt?: boolean
 } & Pick<CommonPromptOptions, 'additionalMessages'>; // Service selection prompts allow extension with additional messages;
 
 export type SystemNamePromptOptions = {

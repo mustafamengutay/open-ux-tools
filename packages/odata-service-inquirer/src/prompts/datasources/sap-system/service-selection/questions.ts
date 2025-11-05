@@ -33,6 +33,7 @@ import {
 } from '../service-selection/service-helper';
 import type { SystemSelectionAnswers } from '../system-selection';
 import { type ServiceAnswer } from './types';
+import { getValueHelpDownloadPrompt } from '../../../shared-prompts/shared-prompts';
 
 const cliServicePromptName = 'cliServiceSelection';
 
@@ -201,6 +202,10 @@ export function getSystemServiceQuestion(
             },
             name: `${promptNamespace}:${cliServicePromptName}`
         } as Question);
+    }
+
+    if (promptOptions?.includeValueHelpDownloadPrompt) {
+        questions.push(getValueHelpDownloadPrompt(connectValidator, promptNamespace));
     }
     return questions;
 }

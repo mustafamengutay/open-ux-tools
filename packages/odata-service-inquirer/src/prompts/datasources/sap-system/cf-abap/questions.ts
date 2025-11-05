@@ -4,6 +4,7 @@ import { ConnectionValidator } from '../../../connectionValidator';
 import { getCFDiscoverPrompts } from '../abap-on-btp/questions';
 import { getSystemServiceQuestion } from '../service-selection/questions';
 import type { ServiceAnswer } from '../service-selection/types';
+import { getValueHelpDownloadPrompt } from '../../../shared-prompts/shared-prompts';
 
 /**
  * Cloud Foundry ABAP system prompts specifically for BAS environment since it requires additional destination configuration.
