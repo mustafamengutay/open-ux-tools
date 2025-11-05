@@ -14,26 +14,28 @@ export function getValueHelpDownloadPrompt(
 ): ConfirmQuestion {
     const valueHelpDownloadConfirmName = `${promptNamespace}:valueHelpDownloadConfirm`;
     let cachedServicePath: string | undefined;
+    let valueListRefsAnnotations: { target: string; rootPath: string; value: string }[] | undefined;
     const question = {
-        when: (answers: ServiceAnswer) => {
-            return (
-                // Not sure this is correct?
-                !!PromptState.odataService.metadata && !!PromptState.odataService.servicePath
-            );
+        when: () => {
+            if (!!PromptState.odataService.metadata && !!PromptState.odataService.servicePath) {
+                valueListRefsAnnotations = AbapServiceProvider.getValueListReferences(
+                            PromptState.odataService.servicePath,
+                            PromptState.odataService.metadata,
+                            PromptState.odataService.annotations ?? []
+                        );
+                return valueListRefsAnnotations?.length > 0;
+            }
+            return false;
         },
         type: 'confirm',
         name: valueHelpDownloadConfirmName,
         default: false,
         validate: async (fetchValueHelps: boolean, answers: OdataServiceAnswers): Promise<boolean> => {
-            const url = connectionValidator.destinationUrl ?? connectionValidator.validatedUrl;
-            let origin;
-            if (url) {
-                origin = new URL(url).origin;
-            }
+
             if (
+                // todo: check if we need to check the system hostname also...when system host is changed it might reset the prompt state
                 fetchValueHelps &&
                 PromptState.odataService.servicePath !== cachedServicePath && // Dont reload unless the service has changed
-                PromptState.odataService.origin === origin &&
                 PromptState.odataService.metadata &&
                 PromptState.odataService.servicePath
             ) {
@@ -46,11 +48,7 @@ export function getValueHelpDownloadPrompt(
                 }
                 if (abapServiceProvider) {
                     cachedServicePath = PromptState.odataService.servicePath;
-                    const valueListRefsAnnotations = abapServiceProvider.getValueListReferences(
-                        PromptState.odataService.servicePath,
-                        PromptState.odataService.metadata,
-                        PromptState.odataService.annotations ?? []
-                    );
+                    
                     if (Array.isArray(valueListRefsAnnotations) && valueListRefsAnnotations.length > 0) {
                         const valueListReferences = await abapServiceProvider
                             .fetchValueListReferenceServices(valueListRefsAnnotations)

@@ -204,7 +204,7 @@ export function getSystemServiceQuestion(
         } as Question);
     }
 
-    if (promptOptions?.includeValueHelpDownloadPrompt) {
+    if (/** promptOptions?.includeValueHelpDownloadPrompt **/ true) {
         questions.push(getValueHelpDownloadPrompt(connectValidator, promptNamespace));
     }
     return questions;

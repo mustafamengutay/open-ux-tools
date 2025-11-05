@@ -339,7 +339,7 @@ export class AbapServiceProvider extends ServiceProvider {
      * @param annotations - The annotation files
      * @returns ValueListReferences found in the files.
      */
-    public getValueListReferences(
+    public static getValueListReferences(
         servicePath: string,
         metadata: ConvertedMetadata | string | undefined,
         annotations: { Definitions: string; Uri: string }[]
