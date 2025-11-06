@@ -18,6 +18,7 @@ export function getValueHelpDownloadPrompt(
     const question = {
         when: () => {
             if (!!PromptState.odataService.metadata && !!PromptState.odataService.servicePath) {
+                // todo: Should not re-evaluate this every time this `when` condition executes
                 valueListRefsAnnotations = AbapServiceProvider.getValueListReferences(
                             PromptState.odataService.servicePath,
                             PromptState.odataService.metadata,
