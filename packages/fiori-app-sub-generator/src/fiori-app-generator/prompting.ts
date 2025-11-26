@@ -436,6 +436,9 @@ function createOdataServicePromptOptions(options: OdataServiceInquirerOptions): 
             useAutoComplete: !isYUI,
             includeCloudFoundryAbapEnvChoice: true,
             ...options.promptOptions?.systemSelection
+        },
+        [odataServiceInquirerPromptNames.valueHelpDownload]: {
+            hide: false
         }
     };
 }
